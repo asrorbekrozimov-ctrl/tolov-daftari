@@ -1,0 +1,428 @@
+index.html
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>To'lov Daftari</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#101826; --surface:#17233A; --surface2:#0C121F; --line:#2A3B57; --line2:#202D45;
+    --text:#ECE7DA; --muted:#8FA0BD; --faint:#5C6E8C; --dim:#4C5D7A;
+    --gold:#C9A24B; --green:#6FA287; --red:#C1614D;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{margin:0; background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh;}
+  input,select,button{font-family:inherit;}
+  .hidden{display:none !important;}
+
+  /* Auth screen */
+  #auth{min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;}
+  .auth-box{width:100%; max-width:380px;}
+  .auth-head{text-align:center; margin-bottom:28px;}
+  .lock-badge{width:56px; height:56px; border-radius:999px; background:var(--surface); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; margin:0 auto 14px; font-size:22px;}
+  .auth-title{font-family:'Fraunces',serif; font-size:28px; font-weight:600; margin:0;}
+  .auth-sub{color:var(--muted); font-size:13px; font-family:'IBM Plex Mono',monospace; margin-top:8px;}
+  .card{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:22px;}
+  .field-label{font-size:11px; letter-spacing:.05em; color:var(--muted); font-family:'IBM Plex Mono',monospace;}
+  .input, select.input{width:100%; background:var(--bg); border:1px solid var(--line); color:var(--text); border-radius:10px; padding:11px 12px; font-size:14px; outline:none; margin-top:4px;}
+  .input:focus{box-shadow:0 0 0 2px var(--gold);}
+  .pw-wrap{position:relative;}
+  .pw-toggle{position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--faint); font-family:'IBM Plex Mono',monospace; font-size:11px; cursor:pointer;}
+  .btn-primary{width:100%; background:var(--gold); color:var(--bg); border:none; border-radius:10px; padding:13px; font-weight:600; font-size:14px; margin-top:16px; cursor:pointer;}
+  .btn-primary:active{filter:brightness(.95);}
+  .err{color:var(--red); font-size:12px; font-family:'IBM Plex Mono',monospace; margin-top:10px;}
+  .link-btn{display:block; width:100%; text-align:center; background:none; border:none; color:var(--faint); font-size:12px; font-family:'IBM Plex Mono',monospace; margin-top:14px; cursor:pointer;}
+  .footnote{text-align:center; color:var(--dim); font-size:11px; font-family:'IBM Plex Mono',monospace; margin-top:22px;}
+  .hint{color:var(--dim); font-size:11px; font-family:'IBM Plex Mono',monospace; margin-top:6px;}
+
+  /* App shell */
+  #app{display:none; min-height:100vh; flex-direction:column;}
+  header.top{padding:20px 18px 14px; border-bottom:1px solid var(--line2); position:sticky; top:0; background:var(--bg); z-index:5;}
+  .top-title{font-family:'Fraunces',serif; font-size:20px; font-weight:600; margin:0;}
+  .top-sub{font-size:11px; color:var(--faint); font-family:'IBM Plex Mono',monospace; margin-top:2px;}
+
+  .groups-row{display:flex; gap:8px; overflow-x:auto; padding:14px 18px; border-bottom:1px solid var(--line2);}
+  .group-chip{flex-shrink:0; padding:8px 14px; border-radius:999px; border:1px solid var(--line); background:var(--surface); color:var(--muted); font-size:13px; font-weight:500; cursor:pointer; display:flex; align-items:center; gap:6px; white-space:nowrap;}
+  .group-chip.active{border-color:var(--gold); color:var(--text); background:#1D2A44;}
+  .group-chip .cnt{font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--dim);}
+  .group-add{flex-shrink:0; width:36px; height:36px; border-radius:999px; border:1px dashed var(--line); background:none; color:var(--gold); font-size:18px; cursor:pointer;}
+
+  .search-wrap{padding:14px 18px 0;}
+  .search-input{width:100%; background:var(--surface); border:1px solid var(--line); color:var(--text); border-radius:10px; padding:10px 12px; font-size:14px; outline:none;}
+
+  .list{flex:1; overflow-y:auto; padding:16px 18px 90px;}
+  .empty{text-align:center; color:var(--faint); font-size:13px; padding:60px 20px;}
+  .row-card{border:1px solid var(--line2); border-radius:12px; padding:14px 16px; margin-bottom:10px; background:var(--surface);}
+  .row-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .row-name{font-weight:600; font-size:15px;}
+  .row-actions{display:flex; gap:14px;}
+  .row-actions button{background:none; border:none; color:var(--faint); font-size:15px; cursor:pointer; padding:2px;}
+  .row-meta{display:flex; gap:8px; margin-top:9px; flex-wrap:wrap;}
+  .badge{font-size:11px; font-family:'IBM Plex Mono',monospace; padding:4px 9px; border-radius:999px;}
+  .badge-pay{background:rgba(111,162,135,.15); color:var(--green); border:1px solid rgba(111,162,135,.3);}
+  .badge-date{color:var(--muted); border:1px solid var(--line);}
+
+  .fab{position:fixed; right:18px; bottom:22px; width:56px; height:56px; border-radius:999px; background:var(--gold); color:var(--bg); border:none; font-size:26px; box-shadow:0 6px 20px rgba(0,0,0,.4); cursor:pointer; z-index:10;}
+
+  /* Modal */
+  .overlay{position:fixed; inset:0; background:rgba(6,10,18,.72); display:flex; align-items:flex-end; justify-content:center; z-index:20;}
+  .modal{background:var(--surface); border:1px solid var(--line); border-top-left-radius:20px; border-top-right-radius:20px; padding:22px; width:100%; max-width:480px; max-height:88vh; overflow-y:auto;}
+  .modal-title{font-family:'Fraunces',serif; font-size:19px; font-weight:600; margin:0 0 16px;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .field{margin-bottom:12px;}
+  .modal-actions{display:flex; justify-content:flex-end; gap:10px; margin-top:18px;}
+  .btn-ghost{background:none; border:none; color:var(--muted); padding:10px 14px; font-size:14px; cursor:pointer;}
+  .btn-gold{background:var(--gold); color:var(--bg); border:none; border-radius:10px; padding:10px 18px; font-weight:600; font-size:14px; cursor:pointer;}
+  .btn-red{background:var(--red); color:var(--text); border:none; border-radius:10px; padding:10px 18px; font-weight:600; font-size:14px; cursor:pointer;}
+  .btn-gold:disabled{background:var(--line); color:var(--dim);}
+</style>
+</head>
+<body>
+
+<div id="auth">
+  <div class="auth-box">
+    <div class="auth-head">
+      <div class="lock-badge">🔒</div>
+      <h1 class="auth-title">To'lov Daftari</h1>
+      <p class="auth-sub" id="authSub">Shaxsiy reestringizni himoyalang</p>
+    </div>
+    <div class="card">
+      <label class="field-label">PAROL</label>
+      <div class="pw-wrap" style="margin-top:4px;">
+        <input id="pwInput" class="input" type="password" placeholder="••••••••" style="padding-right:64px; margin-top:0;">
+        <button class="pw-toggle" id="pwToggle" type="button">KO'RISH</button>
+      </div>
+      <p class="hint" id="pwHint">Kamida 4 ta belgi.</p>
+      <p class="err hidden" id="authErr"></p>
+      <button class="btn-primary" id="authBtn" type="button">Parolni o'rnatish</button>
+    </div>
+    <button class="link-btn hidden" id="resetBtn" type="button">Parolni unutdim, qaytadan o'rnatish</button>
+    <p class="footnote">Faqat siz uchun · shu qurilmada saqlanadi</p>
+  </div>
+</div>
+
+<div id="app">
+  <header class="top">
+    <h1 class="top-title">To'lov Daftari</h1>
+    <p class="top-sub" id="regNo">REESTR №00</p>
+  </header>
+
+  <div class="groups-row" id="groupsRow"></div>
+  <div class="search-wrap">
+    <input class="search-input" id="searchInput" placeholder="Ism yoki familiya bo'yicha qidirish">
+  </div>
+
+  <div class="list" id="list"></div>
+  <button class="fab" id="fabAdd" type="button">+</button>
+</div>
+
+<div id="modalRoot"></div>
+
+<script>
+(function(){
+  "use strict";
+  var tg = window.Telegram && window.Telegram.WebApp;
+  if (tg) { try { tg.ready(); tg.expand(); } catch(e){} }
+
+  var MONTHS = ["Yanvar","Fevral","Mart","Aprel","May","Iyun","Iyul","Avgust","Sentabr","Oktabr","Noyabr","Dekabr"];
+  var LS_PASS = "tolov-daftari-pass";
+  var LS_DATA = "tolov-daftari-data";
+
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+  function todayISO(){ return new Date().toISOString().slice(0,10); }
+  function formatDate(iso){ if(!iso) return "—"; var p = iso.split("-"); return p[2]+"."+p[1]+"."+p[0]; }
+  function esc(s){ var d=document.createElement("div"); d.textContent = s==null?"":String(s); return d.innerHTML; }
+
+  function loadData(){
+    try {
+      var raw = localStorage.getItem(LS_DATA);
+      return raw ? JSON.parse(raw) : { groups: [], students: [] };
+    } catch(e){ return { groups: [], students: [] }; }
+  }
+  function saveData(d){ try { localStorage.setItem(LS_DATA, JSON.stringify(d)); } catch(e){} }
+
+  var state = { data: loadData(), activeGroup: null, search: "" };
+  if (state.data.groups.length) state.activeGroup = state.data.groups[0].id;
+
+  /* ---------- AUTH ---------- */
+  var authEl = document.getElementById("auth");
+  var appEl = document.getElementById("app");
+  var pwInput = document.getElementById("pwInput");
+  var pwToggle = document.getElementById("pwToggle");
+  var pwHint = document.getElementById("pwHint");
+  var authErr = document.getElementById("authErr");
+  var authBtn = document.getElementById("authBtn");
+  var authSub = document.getElementById("authSub");
+  var resetBtn = document.getElementById("resetBtn");
+
+  var savedPass = null;
+  try { savedPass = localStorage.getItem(LS_PASS); } catch(e){ savedPass = null; }
+  var mode = (savedPass && savedPass.trim().length > 0) ? "login" : "setup";
+  renderAuthMode();
+
+  function renderAuthMode(){
+    if (mode === "setup") {
+      authSub.textContent = "Shaxsiy reestringizni himoyalang";
+      authBtn.textContent = "Parolni o'rnatish";
+      pwHint.classList.remove("hidden");
+      resetBtn.classList.add("hidden");
+    } else {
+      authSub.textContent = "Kirish uchun parolni kiriting";
+      authBtn.textContent = "Kirish";
+      pwHint.classList.add("hidden");
+      resetBtn.classList.remove("hidden");
+    }
+  }
+
+  pwToggle.addEventListener("click", function(){
+    var showing = pwInput.type === "text";
+    pwInput.type = showing ? "password" : "text";
+    pwToggle.textContent = showing ? "KO'RISH" : "YASHIR";
+  });
+
+  function showAuthError(msg){
+    authErr.textContent = msg;
+    authErr.classList.remove("hidden");
+  }
+  function clearAuthError(){ authErr.classList.add("hidden"); authErr.textContent = ""; }
+
+  function submitAuth(){
+    var val = (pwInput.value || "").trim();
+    clearAuthError();
+    if (mode === "setup") {
+      if (val.length < 4) { showAuthError("Parol kamida 4 ta belgidan iborat bo'lsin."); return; }
+      try { localStorage.setItem(LS_PASS, val); } catch(e){}
+      savedPass = val;
+      enterApp();
+    } else {
+      if (val === savedPass) { enterApp(); }
+      else { showAuthError("Parol noto'g'ri."); }
+    }
+  }
+
+  authBtn.addEventListener("click", submitAuth);
+  pwInput.addEventListener("keydown", function(e){ if (e.key === "Enter") submitAuth(); });
+
+  resetBtn.addEventListener("click", function(){
+    try { localStorage.removeItem(LS_PASS); } catch(e){}
+    savedPass = null;
+    pwInput.value = "";
+    mode = "setup";
+    clearAuthError();
+    renderAuthMode();
+    pwInput.focus();
+  });
+
+  function enterApp(){
+    authEl.style.display = "none";
+    appEl.style.display = "flex";
+    renderAll();
+  }
+
+  /* ---------- APP RENDER ---------- */
+  var groupsRow = document.getElementById("groupsRow");
+  var listEl = document.getElementById("list");
+  var regNo = document.getElementById("regNo");
+  var searchInput = document.getElementById("searchInput");
+  var fabAdd = document.getElementById("fabAdd");
+  var modalRoot = document.getElementById("modalRoot");
+
+  searchInput.addEventListener("input", function(){ state.search = searchInput.value; renderList(); });
+  fabAdd.addEventListener("click", function(){
+    if (!state.activeGroup) { openGroupModal(); return; }
+    openStudentModal(null);
+  });
+
+  function persist(){ saveData(state.data); }
+
+  function renderAll(){
+    regNo.textContent = "REESTR №" + String(state.data.groups.length).padStart(2,"0");
+    renderGroups();
+    renderList();
+  }
+
+  function renderGroups(){
+    groupsRow.innerHTML = "";
+    state.data.groups.forEach(function(g){
+      var count = state.data.students.filter(function(s){ return s.groupId === g.id; }).length;
+      var chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "group-chip" + (g.id === state.activeGroup ? " active" : "");
+      chip.innerHTML = esc(g.name) + ' <span class="cnt">' + count + "</span>";
+      chip.addEventListener("click", function(){ state.activeGroup = g.id; renderAll(); });
+      chip.addEventListener("dblclick", function(){ confirmDelete("group", g.id, g.name); });
+      groupsRow.appendChild(chip);
+    });
+    var addBtn = document.createElement("button");
+    addBtn.type = "button";
+    addBtn.className = "group-add";
+    addBtn.textContent = "+";
+    addBtn.addEventListener("click", openGroupModal);
+    groupsRow.appendChild(addBtn);
+  }
+
+  function renderList(){
+    listEl.innerHTML = "";
+    if (!state.activeGroup) {
+      listEl.innerHTML = '<div class="empty">Boshlash uchun guruh yarating.</div>';
+      return;
+    }
+    var list = state.data.students.filter(function(s){ return s.groupId === state.activeGroup; });
+    var q = (state.search || "").trim().toLowerCase();
+    if (q) {
+      list = list.filter(function(s){
+        return s.ism.toLowerCase().indexOf(q) !== -1 || s.familiya.toLowerCase().indexOf(q) !== -1;
+      });
+    }
+    list.sort(function(a,b){ return a.familiya.localeCompare(b.familiya); });
+
+    if (list.length === 0) {
+      listEl.innerHTML = '<div class="empty">' + (q ? "Hech kim topilmadi." : "Bu guruhda hali o'quvchi yo'q. Pastdagi + tugmasi bilan qo'shing.") + "</div>";
+      return;
+    }
+    list.forEach(function(s){
+      var card = document.createElement("div");
+      card.className = "row-card";
+      card.innerHTML =
+        '<div class="row-top">' +
+          '<div class="row-name">' + esc(s.familiya) + " " + esc(s.ism) + "</div>" +
+          '<div class="row-actions">' +
+            '<button data-act="edit">✎</button>' +
+            '<button data-act="del">🗑</button>' +
+          "</div>" +
+        "</div>" +
+        '<div class="row-meta">' +
+          '<span class="badge badge-pay">' + esc(s.tolovOyi) + " " + esc(s.tolovYili) + "</span>" +
+          '<span class="badge badge-date">📅 ' + formatDate(s.qoshilishSanasi) + "</span>" +
+        "</div>";
+      card.querySelector('[data-act="edit"]').addEventListener("click", function(){ openStudentModal(s); });
+      card.querySelector('[data-act="del"]').addEventListener("click", function(){ confirmDelete("student", s.id, s.familiya + " " + s.ism); });
+      listEl.appendChild(card);
+    });
+  }
+
+  /* ---------- MODALS ---------- */
+  function closeModal(){ modalRoot.innerHTML = ""; }
+
+  function openGroupModal(){
+    modalRoot.innerHTML =
+      '<div class="overlay" id="ov">' +
+        '<div class="modal">' +
+          '<h3 class="modal-title">Yangi guruh</h3>' +
+          '<input class="input" id="gname" placeholder="Masalan: Matematika-1">' +
+          '<div class="modal-actions">' +
+            '<button class="btn-ghost" id="cancelG">Bekor qilish</button>' +
+            '<button class="btn-gold" id="saveG">Qo\'shish</button>' +
+          "</div>" +
+        "</div>" +
+      "</div>";
+    var ov = document.getElementById("ov");
+    ov.addEventListener("click", function(e){ if (e.target === ov) closeModal(); });
+    document.getElementById("cancelG").addEventListener("click", closeModal);
+    var nameInput = document.getElementById("gname");
+    nameInput.focus();
+    function submit(){
+      var name = nameInput.value.trim();
+      if (!name) return;
+      var g = { id: uid(), name: name };
+      state.data.groups.push(g);
+      state.activeGroup = g.id;
+      persist();
+      closeModal();
+      renderAll();
+    }
+    document.getElementById("saveG").addEventListener("click", submit);
+    nameInput.addEventListener("keydown", function(e){ if (e.key === "Enter") submit(); });
+  }
+
+  function openStudentModal(student){
+    var isNew = !student;
+    var f = student ? Object.assign({}, student) : {
+      id: null, groupId: state.activeGroup, ism: "", familiya: "",
+      tolovOyi: MONTHS[new Date().getMonth()], tolovYili: new Date().getFullYear(),
+      qoshilishSanasi: todayISO()
+    };
+    var monthOptions = MONTHS.map(function(m){
+      return '<option value="' + m + '"' + (m === f.tolovOyi ? " selected" : "") + ">" + m + "</option>";
+    }).join("");
+
+    modalRoot.innerHTML =
+      '<div class="overlay" id="ov">' +
+        '<div class="modal">' +
+          '<h3 class="modal-title">' + (isNew ? "O'quvchi qo'shish" : "O'quvchini tahrirlash") + "</h3>" +
+          '<div class="grid2">' +
+            '<div class="field"><label class="field-label">ISM</label><input class="input" id="fIsm" value="' + esc(f.ism) + '"></div>' +
+            '<div class="field"><label class="field-label">FAMILIYA</label><input class="input" id="fFam" value="' + esc(f.familiya) + '"></div>' +
+          "</div>" +
+          '<div class="grid2">' +
+            '<div class="field"><label class="field-label">TO\'LOV OYI</label><select class="input" id="fOy">' + monthOptions + "</select></div>" +
+            '<div class="field"><label class="field-label">YIL</label><input class="input" type="number" id="fYil" value="' + esc(f.tolovYili) + '"></div>' +
+          "</div>" +
+          '<div class="field"><label class="field-label">KURSGA QO\'SHILGAN SANA</label><input class="input" type="date" id="fSana" value="' + esc(f.qoshilishSanasi) + '"></div>' +
+          '<div class="modal-actions">' +
+            '<button class="btn-ghost" id="cancelS">Bekor qilish</button>' +
+            '<button class="btn-gold" id="saveS">Saqlash</button>' +
+          "</div>" +
+        "</div>" +
+      "</div>";
+
+    var ov = document.getElementById("ov");
+    ov.addEventListener("click", function(e){ if (e.target === ov) closeModal(); });
+    document.getElementById("cancelS").addEventListener("click", closeModal);
+    document.getElementById("saveS").addEventListener("click", function(){
+      f.ism = document.getElementById("fIsm").value.trim();
+      f.familiya = document.getElementById("fFam").value.trim();
+      f.tolovOyi = document.getElementById("fOy").value;
+      f.tolovYili = parseInt(document.getElementById("fYil").value, 10) || f.tolovYili;
+      f.qoshilishSanasi = document.getElementById("fSana").value;
+      if (!f.ism || !f.familiya) return;
+      if (!f.id) {
+        f.id = uid();
+        state.data.students.push(f);
+      } else {
+        state.data.students = state.data.students.map(function(s){ return s.id === f.id ? f : s; });
+      }
+      persist();
+      closeModal();
+      renderAll();
+    });
+  }
+
+  function confirmDelete(type, id, name){
+    modalRoot.innerHTML =
+      '<div class="overlay" id="ov">' +
+        '<div class="modal">' +
+          '<h3 class="modal-title">O\'chirishni tasdiqlang</h3>' +
+          '<p style="color:var(--muted); font-size:14px; margin:0 0 6px;">"' + esc(name) + '" ' +
+            (type === "group" ? "guruhi va undagi barcha o'quvchilar o'chiriladi." : "reestrdan o'chiriladi.") +
+            " Bu amalni bekor qilib bo'lmaydi.</p>" +
+          '<div class="modal-actions">' +
+            '<button class="btn-ghost" id="cancelD">Bekor qilish</button>' +
+            '<button class="btn-red" id="confirmD">O\'chirish</button>' +
+          "</div>" +
+        "</div>" +
+      "</div>";
+    var ov = document.getElementById("ov");
+    ov.addEventListener("click", function(e){ if (e.target === ov) closeModal(); });
+    document.getElementById("cancelD").addEventListener("click", closeModal);
+    document.getElementById("confirmD").addEventListener("click", function(){
+      if (type === "group") {
+        state.data.groups = state.data.groups.filter(function(g){ return g.id !== id; });
+        state.data.students = state.data.students.filter(function(s){ return s.groupId !== id; });
+        if (state.activeGroup === id) state.activeGroup = state.data.groups[0] ? state.data.groups[0].id : null;
+      } else {
+        state.data.students = state.data.students.filter(function(s){ return s.id !== id; });
+      }
+      persist();
+      closeModal();
+      renderAll();
+    });
+  }
+})();
+</script>
+</body>
+</html>
