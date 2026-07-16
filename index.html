@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="uz">
 <head>
@@ -41,9 +40,18 @@
 
   /* App shell */
   #app{display:none; min-height:100vh; flex-direction:column;}
-  header.top{padding:20px 18px 14px; border-bottom:1px solid var(--line2); position:sticky; top:0; background:var(--bg); z-index:5;}
+  header.top{padding:18px 18px 0; border-bottom:1px solid var(--line2); position:sticky; top:0; background:var(--bg); z-index:5;}
+  .top-row{display:flex; justify-content:space-between; align-items:flex-start;}
   .top-title{font-family:'Fraunces',serif; font-size:20px; font-weight:600; margin:0;}
   .top-sub{font-size:11px; color:var(--faint); font-family:'IBM Plex Mono',monospace; margin-top:2px;}
+
+  .stats-strip{display:flex; gap:10px; padding:14px 0 16px; overflow-x:auto;}
+  .stat-pill{flex-shrink:0; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:9px 14px; min-width:118px;}
+  .stat-pill .num{font-family:'IBM Plex Mono',monospace; font-size:16px; font-weight:600; color:var(--text);}
+  .stat-pill .lbl{font-size:10px; color:var(--faint); margin-top:2px; letter-spacing:.03em;}
+  .stat-pill.gold .num{color:var(--gold);}
+  .stat-pill.green .num{color:var(--green);}
+  .stat-pill.red .num{color:var(--red);}
 
   .groups-row{display:flex; gap:8px; overflow-x:auto; padding:14px 18px; border-bottom:1px solid var(--line2);}
   .group-chip{flex-shrink:0; padding:8px 14px; border-radius:999px; border:1px solid var(--line); background:var(--surface); color:var(--muted); font-size:13px; font-weight:500; cursor:pointer; display:flex; align-items:center; gap:6px; white-space:nowrap;}
@@ -51,20 +59,27 @@
   .group-chip .cnt{font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--dim);}
   .group-add{flex-shrink:0; width:36px; height:36px; border-radius:999px; border:1px dashed var(--line); background:none; color:var(--gold); font-size:18px; cursor:pointer;}
 
+  .group-head{display:flex; justify-content:space-between; align-items:center; padding:14px 18px 0;}
+  .group-head-name{font-family:'Fraunces',serif; font-size:17px; font-weight:600;}
+  .group-head-price{font-size:11px; color:var(--faint); font-family:'IBM Plex Mono',monospace; margin-top:2px;}
+  .icon-btn{background:none; border:1px solid var(--line); color:var(--muted); border-radius:8px; width:32px; height:32px; font-size:14px; cursor:pointer;}
+
   .search-wrap{padding:14px 18px 0;}
   .search-input{width:100%; background:var(--surface); border:1px solid var(--line); color:var(--text); border-radius:10px; padding:10px 12px; font-size:14px; outline:none;}
 
   .list{flex:1; overflow-y:auto; padding:16px 18px 90px;}
-  .empty{text-align:center; color:var(--faint); font-size:13px; padding:60px 20px;}
-  .row-card{border:1px solid var(--line2); border-radius:12px; padding:14px 16px; margin-bottom:10px; background:var(--surface);}
+  .empty{text-align:center; color:var(--faint); font-size:13px; padding:60px 20px; line-height:1.6;}
+  .row-card{border:1px solid var(--line2); border-radius:12px; padding:14px 16px; margin-bottom:10px; background:var(--surface); cursor:pointer;}
   .row-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
   .row-name{font-weight:600; font-size:15px;}
   .row-actions{display:flex; gap:14px;}
   .row-actions button{background:none; border:none; color:var(--faint); font-size:15px; cursor:pointer; padding:2px;}
-  .row-meta{display:flex; gap:8px; margin-top:9px; flex-wrap:wrap;}
+  .row-meta{display:flex; gap:8px; margin-top:9px; flex-wrap:wrap; align-items:center;}
   .badge{font-size:11px; font-family:'IBM Plex Mono',monospace; padding:4px 9px; border-radius:999px;}
-  .badge-pay{background:rgba(111,162,135,.15); color:var(--green); border:1px solid rgba(111,162,135,.3);}
   .badge-date{color:var(--muted); border:1px solid var(--line);}
+  .status-badge{font-size:12px; font-family:'IBM Plex Mono',monospace; padding:5px 11px; border-radius:999px; border:1px solid transparent; font-weight:600; cursor:pointer;}
+  .status-paid{background:rgba(111,162,135,.16); color:var(--green); border-color:rgba(111,162,135,.4);}
+  .status-unpaid{background:rgba(193,97,77,.16); color:var(--red); border-color:rgba(193,97,77,.4);}
 
   .fab{position:fixed; right:18px; bottom:22px; width:56px; height:56px; border-radius:999px; background:var(--gold); color:var(--bg); border:none; font-size:26px; box-shadow:0 6px 20px rgba(0,0,0,.4); cursor:pointer; z-index:10;}
 
@@ -79,6 +94,15 @@
   .btn-gold{background:var(--gold); color:var(--bg); border:none; border-radius:10px; padding:10px 18px; font-weight:600; font-size:14px; cursor:pointer;}
   .btn-red{background:var(--red); color:var(--text); border:none; border-radius:10px; padding:10px 18px; font-weight:600; font-size:14px; cursor:pointer;}
   .btn-gold:disabled{background:var(--line); color:var(--dim);}
+  .preview-box{background:var(--bg); border:1px dashed var(--line); border-radius:10px; padding:12px; margin-top:4px; font-size:12px; color:var(--muted); font-family:'IBM Plex Mono',monospace; line-height:1.7;}
+  .preview-box b{color:var(--gold);}
+
+  .month-row{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:11px 0; border-bottom:1px solid var(--line2);}
+  .month-row:last-child{border-bottom:none;}
+  .month-name{font-size:13px; color:var(--text); min-width:92px;}
+  .month-amount{background:var(--bg); border:1px solid var(--line); color:var(--text); border-radius:8px; padding:7px 9px; font-size:13px; width:110px; font-family:'IBM Plex Mono',monospace;}
+  .month-total{display:flex; justify-content:space-between; padding-top:12px; margin-top:6px; border-top:1px solid var(--line); font-size:13px;}
+  .month-total b{color:var(--gold); font-family:'IBM Plex Mono',monospace;}
 </style>
 </head>
 <body>
@@ -107,11 +131,17 @@
 
 <div id="app">
   <header class="top">
-    <h1 class="top-title">To'lov Daftari</h1>
-    <p class="top-sub" id="regNo">REESTR №00</p>
+    <div class="top-row">
+      <div>
+        <h1 class="top-title">To'lov Daftari</h1>
+        <p class="top-sub" id="regNo">REESTR №00</p>
+      </div>
+    </div>
+    <div class="stats-strip" id="statsStrip"></div>
   </header>
 
   <div class="groups-row" id="groupsRow"></div>
+  <div class="group-head" id="groupHead"></div>
   <div class="search-wrap">
     <input class="search-input" id="searchInput" placeholder="Ism yoki familiya bo'yicha qidirish">
   </div>
@@ -135,18 +165,86 @@
   function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
   function todayISO(){ return new Date().toISOString().slice(0,10); }
   function formatDate(iso){ if(!iso) return "—"; var p = iso.split("-"); return p[2]+"."+p[1]+"."+p[0]; }
+  function formatSum(n){ n = Math.round(n||0); return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " "); }
   function esc(s){ var d=document.createElement("div"); d.textContent = s==null?"":String(s); return d.innerHTML; }
 
+  /* ---------- DATE / MONTH HELPERS ---------- */
+  function monthKeyOf(y, mIdx){ return y + "-" + String(mIdx+1).padStart(2,"0"); }
+  function currentMonthKey(){ var d = new Date(); return monthKeyOf(d.getFullYear(), d.getMonth()); }
+  function monthKeyFromISO(iso){ var p = iso.split("-"); return p[0] + "-" + p[1]; }
+  function parseMonthKey(mk){ var p = mk.split("-"); return { y: parseInt(p[0],10), mIdx: parseInt(p[1],10)-1 }; }
+  function monthLabel(mk){ var p = parseMonthKey(mk); return MONTHS[p.mIdx] + " " + p.y; }
+  function daysInMonth(y, mIdx){ return new Date(y, mIdx+1, 0).getDate(); }
+  function addMonths(mk, n){ var p = parseMonthKey(mk); var total = p.y*12 + p.mIdx + n; var y = Math.floor(total/12); var mIdx = ((total%12)+12)%12; return monthKeyOf(y, mIdx); }
+  function monthsBetweenInclusive(fromMk, toMk){
+    var out = []; var cur = fromMk; var guard = 0;
+    while (guard < 240) {
+      out.push(cur);
+      if (cur === toMk) break;
+      cur = addMonths(cur, 1);
+      guard++;
+    }
+    return out;
+  }
+
+  function computeProratedAmount(price, joinISO){
+    var p = joinISO.split("-"); var y = parseInt(p[0],10); var mIdx = parseInt(p[1],10)-1; var d = parseInt(p[2],10);
+    var dim = daysInMonth(y, mIdx);
+    var remaining = dim - d + 1;
+    if (remaining < 0) remaining = 0;
+    if (remaining > dim) remaining = dim;
+    return Math.round(price * remaining / dim);
+  }
+
+  /* ---------- DATA ---------- */
   function loadData(){
     try {
       var raw = localStorage.getItem(LS_DATA);
-      return raw ? JSON.parse(raw) : { groups: [], students: [] };
+      var d = raw ? JSON.parse(raw) : null;
+      if (!d) return { groups: [], students: [] };
+      d.groups = d.groups || [];
+      d.students = d.students || [];
+      d.groups.forEach(function(g){ if (typeof g.price !== "number") g.price = 0; });
+      d.students.forEach(function(s){ if (!s.months || typeof s.months !== "object") s.months = {}; });
+      return d;
     } catch(e){ return { groups: [], students: [] }; }
   }
   function saveData(d){ try { localStorage.setItem(LS_DATA, JSON.stringify(d)); } catch(e){} }
 
   var state = { data: loadData(), activeGroup: null, search: "" };
   if (state.data.groups.length) state.activeGroup = state.data.groups[0].id;
+
+  function getGroup(id){ return state.data.groups.find(function(g){ return g.id === id; }); }
+
+  /* Ensure a student has month entries for every month from their join month up to the given target month */
+  function ensureStudentMonths(student, group, targetMk){
+    var joinMk = monthKeyFromISO(student.qoshilishSanasi || todayISO());
+    var keys = monthsBetweenInclusive(joinMk, targetMk);
+    var changed = false;
+    keys.forEach(function(mk){
+      if (!student.months[mk]) {
+        var amount;
+        if (mk === joinMk) {
+          amount = computeProratedAmount(group ? group.price : 0, student.qoshilishSanasi);
+        } else {
+          amount = group ? group.price : 0;
+        }
+        student.months[mk] = { amount: amount, paid: false };
+        changed = true;
+      }
+    });
+    return changed;
+  }
+
+  function ensureAllCurrent(){
+    var mk = currentMonthKey();
+    var changed = false;
+    state.data.students.forEach(function(s){
+      var g = getGroup(s.groupId);
+      if (ensureStudentMonths(s, g, mk)) changed = true;
+    });
+    if (changed) persist();
+  }
 
   /* ---------- AUTH ---------- */
   var authEl = document.getElementById("auth");
@@ -184,10 +282,7 @@
     pwToggle.textContent = showing ? "KO'RISH" : "YASHIR";
   });
 
-  function showAuthError(msg){
-    authErr.textContent = msg;
-    authErr.classList.remove("hidden");
-  }
+  function showAuthError(msg){ authErr.textContent = msg; authErr.classList.remove("hidden"); }
   function clearAuthError(){ authErr.classList.add("hidden"); authErr.textContent = ""; }
 
   function submitAuth(){
@@ -220,20 +315,23 @@
   function enterApp(){
     authEl.style.display = "none";
     appEl.style.display = "flex";
+    ensureAllCurrent();
     renderAll();
   }
 
   /* ---------- APP RENDER ---------- */
   var groupsRow = document.getElementById("groupsRow");
+  var groupHead = document.getElementById("groupHead");
   var listEl = document.getElementById("list");
   var regNo = document.getElementById("regNo");
+  var statsStrip = document.getElementById("statsStrip");
   var searchInput = document.getElementById("searchInput");
   var fabAdd = document.getElementById("fabAdd");
   var modalRoot = document.getElementById("modalRoot");
 
   searchInput.addEventListener("input", function(){ state.search = searchInput.value; renderList(); });
   fabAdd.addEventListener("click", function(){
-    if (!state.activeGroup) { openGroupModal(); return; }
+    if (!state.activeGroup) { openGroupModal(null); return; }
     openStudentModal(null);
   });
 
@@ -241,8 +339,24 @@
 
   function renderAll(){
     regNo.textContent = "REESTR №" + String(state.data.groups.length).padStart(2,"0");
+    renderStats();
     renderGroups();
+    renderGroupHead();
     renderList();
+  }
+
+  function renderStats(){
+    var mk = currentMonthKey();
+    var totalStudents = state.data.students.length;
+    var potential = 0, collected = 0;
+    state.data.students.forEach(function(s){
+      var m = s.months[mk];
+      if (m) { potential += m.amount; if (m.paid) collected += m.amount; }
+    });
+    statsStrip.innerHTML =
+      '<div class="stat-pill"><div class="num">' + totalStudents + '</div><div class="lbl">JAMI O\'QUVCHI</div></div>' +
+      '<div class="stat-pill gold"><div class="num">' + formatSum(potential) + '</div><div class="lbl">OYLIK DAROMAD (SO\'M)</div></div>' +
+      '<div class="stat-pill green"><div class="num">' + formatSum(collected) + '</div><div class="lbl">BU OY YIG\'ILGAN (SO\'M)</div></div>';
   }
 
   function renderGroups(){
@@ -261,16 +375,30 @@
     addBtn.type = "button";
     addBtn.className = "group-add";
     addBtn.textContent = "+";
-    addBtn.addEventListener("click", openGroupModal);
+    addBtn.addEventListener("click", function(){ openGroupModal(null); });
     groupsRow.appendChild(addBtn);
+  }
+
+  function renderGroupHead(){
+    var g = getGroup(state.activeGroup);
+    if (!g) { groupHead.innerHTML = ""; return; }
+    groupHead.innerHTML =
+      '<div>' +
+        '<div class="group-head-name">' + esc(g.name) + '</div>' +
+        '<div class="group-head-price">Oylik narx: ' + formatSum(g.price) + " so'm</div>" +
+      '</div>' +
+      '<button class="icon-btn" id="editGroupBtn" type="button">✎</button>';
+    document.getElementById("editGroupBtn").addEventListener("click", function(){ openGroupModal(g); });
   }
 
   function renderList(){
     listEl.innerHTML = "";
     if (!state.activeGroup) {
-      listEl.innerHTML = '<div class="empty">Boshlash uchun guruh yarating.</div>';
+      listEl.innerHTML = '<div class="empty">Boshlash uchun yuqoridagi + tugmasi bilan guruh yarating.</div>';
       return;
     }
+    var g = getGroup(state.activeGroup);
+    var mk = currentMonthKey();
     var list = state.data.students.filter(function(s){ return s.groupId === state.activeGroup; });
     var q = (state.search || "").trim().toLowerCase();
     if (q) {
@@ -285,6 +413,11 @@
       return;
     }
     list.forEach(function(s){
+      ensureStudentMonths(s, g, mk);
+      var m = s.months[mk];
+      var paid = m ? m.paid : false;
+      var amount = m ? m.amount : 0;
+
       var card = document.createElement("div");
       card.className = "row-card";
       card.innerHTML =
@@ -296,11 +429,20 @@
           "</div>" +
         "</div>" +
         '<div class="row-meta">' +
-          '<span class="badge badge-pay">' + esc(s.tolovOyi) + " " + esc(s.tolovYili) + "</span>" +
           '<span class="badge badge-date">📅 ' + formatDate(s.qoshilishSanasi) + "</span>" +
+          '<button class="status-badge ' + (paid ? "status-paid" : "status-unpaid") + '" data-act="toggle">' +
+            (paid ? "✓ To'ladi" : "✕ Qarzdor") + " · " + formatSum(amount) + " so'm" +
+          "</button>" +
         "</div>";
-      card.querySelector('[data-act="edit"]').addEventListener("click", function(){ openStudentModal(s); });
-      card.querySelector('[data-act="del"]').addEventListener("click", function(){ confirmDelete("student", s.id, s.familiya + " " + s.ism); });
+      card.querySelector('[data-act="edit"]').addEventListener("click", function(e){ e.stopPropagation(); openStudentModal(s); });
+      card.querySelector('[data-act="del"]').addEventListener("click", function(e){ e.stopPropagation(); confirmDelete("student", s.id, s.familiya + " " + s.ism); });
+      card.querySelector('[data-act="toggle"]').addEventListener("click", function(e){
+        e.stopPropagation();
+        s.months[mk].paid = !s.months[mk].paid;
+        persist();
+        renderAll();
+      });
+      card.addEventListener("click", function(){ openHistoryModal(s); });
       listEl.appendChild(card);
     });
   }
@@ -308,15 +450,19 @@
   /* ---------- MODALS ---------- */
   function closeModal(){ modalRoot.innerHTML = ""; }
 
-  function openGroupModal(){
+  function openGroupModal(existingGroup){
+    var isNew = !existingGroup;
+    var name = existingGroup ? existingGroup.name : "";
+    var price = existingGroup ? existingGroup.price : "";
     modalRoot.innerHTML =
       '<div class="overlay" id="ov">' +
         '<div class="modal">' +
-          '<h3 class="modal-title">Yangi guruh</h3>' +
-          '<input class="input" id="gname" placeholder="Masalan: Matematika-1">' +
+          '<h3 class="modal-title">' + (isNew ? "Yangi guruh" : "Guruhni tahrirlash") + '</h3>' +
+          '<div class="field"><label class="field-label">GURUH NOMI</label><input class="input" id="gname" placeholder="Masalan: Matematika-1" value="' + esc(name) + '"></div>' +
+          '<div class="field"><label class="field-label">OYLIK NARX (SO\'M)</label><input class="input" id="gprice" type="number" placeholder="350000" value="' + esc(price) + '"></div>' +
           '<div class="modal-actions">' +
             '<button class="btn-ghost" id="cancelG">Bekor qilish</button>' +
-            '<button class="btn-gold" id="saveG">Qo\'shish</button>' +
+            '<button class="btn-gold" id="saveG">' + (isNew ? "Qo'shish" : "Saqlash") + '</button>' +
           "</div>" +
         "</div>" +
       "</div>";
@@ -324,31 +470,36 @@
     ov.addEventListener("click", function(e){ if (e.target === ov) closeModal(); });
     document.getElementById("cancelG").addEventListener("click", closeModal);
     var nameInput = document.getElementById("gname");
+    var priceInput = document.getElementById("gprice");
     nameInput.focus();
     function submit(){
-      var name = nameInput.value.trim();
-      if (!name) return;
-      var g = { id: uid(), name: name };
-      state.data.groups.push(g);
-      state.activeGroup = g.id;
+      var nm = nameInput.value.trim();
+      var pr = parseInt(priceInput.value, 10);
+      if (!nm) return;
+      if (isNaN(pr) || pr < 0) pr = 0;
+      if (isNew) {
+        var g = { id: uid(), name: nm, price: pr };
+        state.data.groups.push(g);
+        state.activeGroup = g.id;
+      } else {
+        existingGroup.name = nm;
+        existingGroup.price = pr;
+      }
       persist();
       closeModal();
       renderAll();
     }
     document.getElementById("saveG").addEventListener("click", submit);
-    nameInput.addEventListener("keydown", function(e){ if (e.key === "Enter") submit(); });
+    priceInput.addEventListener("keydown", function(e){ if (e.key === "Enter") submit(); });
   }
 
   function openStudentModal(student){
     var isNew = !student;
     var f = student ? Object.assign({}, student) : {
       id: null, groupId: state.activeGroup, ism: "", familiya: "",
-      tolovOyi: MONTHS[new Date().getMonth()], tolovYili: new Date().getFullYear(),
-      qoshilishSanasi: todayISO()
+      qoshilishSanasi: todayISO(), months: {}
     };
-    var monthOptions = MONTHS.map(function(m){
-      return '<option value="' + m + '"' + (m === f.tolovOyi ? " selected" : "") + ">" + m + "</option>";
-    }).join("");
+    var g = getGroup(f.groupId);
 
     modalRoot.innerHTML =
       '<div class="overlay" id="ov">' +
@@ -358,11 +509,8 @@
             '<div class="field"><label class="field-label">ISM</label><input class="input" id="fIsm" value="' + esc(f.ism) + '"></div>' +
             '<div class="field"><label class="field-label">FAMILIYA</label><input class="input" id="fFam" value="' + esc(f.familiya) + '"></div>' +
           "</div>" +
-          '<div class="grid2">' +
-            '<div class="field"><label class="field-label">TO\'LOV OYI</label><select class="input" id="fOy">' + monthOptions + "</select></div>" +
-            '<div class="field"><label class="field-label">YIL</label><input class="input" type="number" id="fYil" value="' + esc(f.tolovYili) + '"></div>' +
-          "</div>" +
           '<div class="field"><label class="field-label">KURSGA QO\'SHILGAN SANA</label><input class="input" type="date" id="fSana" value="' + esc(f.qoshilishSanasi) + '"></div>' +
+          '<div class="preview-box" id="previewBox"></div>' +
           '<div class="modal-actions">' +
             '<button class="btn-ghost" id="cancelS">Bekor qilish</button>' +
             '<button class="btn-gold" id="saveS">Saqlash</button>' +
@@ -373,22 +521,115 @@
     var ov = document.getElementById("ov");
     ov.addEventListener("click", function(e){ if (e.target === ov) closeModal(); });
     document.getElementById("cancelS").addEventListener("click", closeModal);
+    var sanaInput = document.getElementById("fSana");
+    var previewBox = document.getElementById("previewBox");
+
+    function updatePreview(){
+      if (!g) { previewBox.innerHTML = "Avval guruhga oylik narx belgilang."; return; }
+      var iso = sanaInput.value || todayISO();
+      var mk = monthKeyFromISO(iso);
+      var amount;
+      if (isNew || mk !== monthKeyFromISO(student.qoshilishSanasi)) {
+        amount = computeProratedAmount(g.price, iso);
+      } else {
+        amount = (student.months[mk] && student.months[mk].amount) || computeProratedAmount(g.price, iso);
+      }
+      previewBox.innerHTML = monthLabel(mk) + " uchun avtomatik hisoblangan summa: <b>" + formatSum(amount) + " so'm</b> (guruh narxi " + formatSum(g.price) + " so'mdan, qolgan kunlar hisobida)";
+    }
+    sanaInput.addEventListener("input", updatePreview);
+    updatePreview();
+
     document.getElementById("saveS").addEventListener("click", function(){
       f.ism = document.getElementById("fIsm").value.trim();
       f.familiya = document.getElementById("fFam").value.trim();
-      f.tolovOyi = document.getElementById("fOy").value;
-      f.tolovYili = parseInt(document.getElementById("fYil").value, 10) || f.tolovYili;
-      f.qoshilishSanasi = document.getElementById("fSana").value;
-      if (!f.ism || !f.familiya) return;
-      if (!f.id) {
+      var newSana = sanaInput.value;
+      if (!f.ism || !f.familiya || !newSana) return;
+
+      if (isNew) {
+        f.qoshilishSanasi = newSana;
         f.id = uid();
+        f.months = {};
+        ensureStudentMonths(f, g, currentMonthKey());
         state.data.students.push(f);
       } else {
-        state.data.students = state.data.students.map(function(s){ return s.id === f.id ? f : s; });
+        var oldJoinMk = monthKeyFromISO(student.qoshilishSanasi);
+        var newJoinMk = monthKeyFromISO(newSana);
+        student.ism = f.ism;
+        student.familiya = f.familiya;
+        student.qoshilishSanasi = newSana;
+        if (newJoinMk !== oldJoinMk && student.months[oldJoinMk]) {
+          delete student.months[oldJoinMk];
+        }
+        ensureStudentMonths(student, g, currentMonthKey());
       }
       persist();
       closeModal();
       renderAll();
+    });
+  }
+
+  function openHistoryModal(student){
+    var g = getGroup(student.groupId);
+    var mk = currentMonthKey();
+    ensureStudentMonths(student, g, mk);
+    persist();
+
+    var keys = Object.keys(student.months).sort();
+    var total = 0, paidTotal = 0;
+    var rows = keys.map(function(k){
+      var m = student.months[k];
+      total += m.amount;
+      if (m.paid) paidTotal += m.amount;
+      return '<div class="month-row">' +
+        '<div class="month-name">' + monthLabel(k) + '</div>' +
+        '<input class="month-amount" type="number" data-mk="' + k + '" value="' + m.amount + '">' +
+        '<button class="status-badge ' + (m.paid ? "status-paid" : "status-unpaid") + '" data-toggle="' + k + '">' + (m.paid ? "To'ladi" : "Qarzdor") + '</button>' +
+      '</div>';
+    }).join("");
+
+    modalRoot.innerHTML =
+      '<div class="overlay" id="ov">' +
+        '<div class="modal">' +
+          '<h3 class="modal-title">' + esc(student.familiya) + ' ' + esc(student.ism) + ' — to\'lovlar</h3>' +
+          '<div id="monthRows">' + rows + '</div>' +
+          '<div class="month-total"><span>Jami hisoblangan / to\'langan</span><b>' + formatSum(total) + ' / ' + formatSum(paidTotal) + " so'm</b></div>" +
+          '<div class="modal-actions">' +
+            '<button class="btn-ghost" id="addNextMonth">+ Keyingi oy</button>' +
+            '<button class="btn-gold" id="closeHist">Yopish</button>' +
+          "</div>" +
+        "</div>" +
+      "</div>";
+
+    var ov = document.getElementById("ov");
+    ov.addEventListener("click", function(e){ if (e.target === ov) closeModal(); });
+    document.getElementById("closeHist").addEventListener("click", function(){ closeModal(); renderAll(); });
+
+    document.getElementById("monthRows").addEventListener("click", function(e){
+      var btn = e.target.closest("[data-toggle]");
+      if (!btn) return;
+      var k = btn.getAttribute("data-toggle");
+      student.months[k].paid = !student.months[k].paid;
+      persist();
+      openHistoryModal(student);
+    });
+    document.getElementById("monthRows").addEventListener("change", function(e){
+      var input = e.target.closest(".month-amount");
+      if (!input) return;
+      var k = input.getAttribute("data-mk");
+      var val = parseInt(input.value, 10);
+      if (!isNaN(val) && val >= 0) {
+        student.months[k].amount = val;
+        persist();
+      }
+    });
+    document.getElementById("addNextMonth").addEventListener("click", function(){
+      var last = keys[keys.length - 1];
+      var next = addMonths(last, 1);
+      if (!student.months[next]) {
+        student.months[next] = { amount: g ? g.price : 0, paid: false };
+        persist();
+      }
+      openHistoryModal(student);
     });
   }
 
